@@ -2,6 +2,21 @@
 
 use Illuminate\Support\Str;
 
+/*
+|--------------------------------------------------------------------------
+| MySQL SSL CA option key (PHP 8.5 compatibility)
+|--------------------------------------------------------------------------
+|
+| The PDO::MYSQL_ATTR_SSL_CA constant is deprecated as of PHP 8.5 in favour
+| of Pdo\Mysql::ATTR_SSL_CA. The constant is resolved from a string so the
+| deprecated name is never referenced directly, which keeps this config free
+| of deprecation notices on PHP 8.5 while remaining compatible with 8.2+.
+|
+*/
+$mysqlSslCaOption = defined('Pdo\Mysql::ATTR_SSL_CA')
+    ? constant('Pdo\Mysql::ATTR_SSL_CA')
+    : constant('PDO::MYSQL_ATTR_SSL_CA');
+
 return [
 
     /*
@@ -59,8 +74,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+                $mysqlSslCaOption => env('MYSQL_ATTR_SSL_CA'),
+            ], static fn ($value) => ! is_null($value)) : [],
         ],
         'hospital' => [
             'driver' => 'mysql',
@@ -78,8 +93,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+                $mysqlSslCaOption => env('MYSQL_ATTR_SSL_CA'),
+            ], static fn ($value) => ! is_null($value)) : [],
         ],
 
         'pgsql' => [

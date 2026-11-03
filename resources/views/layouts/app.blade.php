@@ -15,7 +15,12 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    {{-- Skip Vite when assets have not been built yet (`npm install && npm run build`)
+         or the dev server is not running (`npm run dev`), so a missing manifest
+         degrades to an unstyled page instead of a 500 error. --}}
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @endif
 </head>
 
 <body>

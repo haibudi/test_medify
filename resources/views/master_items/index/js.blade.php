@@ -20,6 +20,21 @@
         getData()
     })
 
+    function buildPdfUrl() {
+        var pdf_url = $('.btn-print-pdf').attr('href').split('?')[0];
+        var query = $.param({
+            kode: $('#filter-kode').val(),
+            nama: $('#filter-nama').val(),
+            hargamin: $('#filter-harga-min').val(),
+            hargamax: $('#filter-harga-max').val()
+        });
+        $('.btn-print-pdf').attr('href', pdf_url + '?' + query);
+    }
+
+    $('.btn-print-pdf').on('click auxclick', function() {
+        buildPdfUrl();
+    })
+
     function getData(){
         
         $('#loading-filter').show();
@@ -46,6 +61,7 @@
                     var kode = item.kode;
 
                     var html = `<a href="{{url('master-items/view/')}}/` + kode + `" class="btn btn-primary">View</a>`
+                    var display = item.display ? 'Ya' : 'Tidak';
 
                     $.each(item, function(obj_name, obj_value) {
                         if (obj_name == 'laba') return false;
@@ -53,6 +69,7 @@
                     })
                     array_temp.push(harga_jual)
                     array_temp.push(item.supplier)
+                    array_temp.push(display)
                     array_temp.push(html)
 
 

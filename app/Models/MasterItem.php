@@ -10,4 +10,13 @@ class MasterItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'display' => 'boolean',
+    ];
 }

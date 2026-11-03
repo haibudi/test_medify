@@ -18,6 +18,11 @@
                             <td>{{$data->nama}}</td>
                         </tr>
                         <tr>
+                            <th>Kategori</th>
+                            <td>:</td>
+                            <td>{{$data->kategori}}</td>
+                        </tr>
+                        <tr>
                             <th>Harga Beli</th>
                             <td>:</td>
                             <td>{{$data->harga_beli}}</td>
@@ -41,6 +46,11 @@
                             <th>Jenis</th>
                             <td>:</td>
                             <td>{{$data->jenis}}</td>
+                        </tr>
+                        <tr>
+                            <th>Display</th>
+                            <td>:</td>
+                            <td>{{$data->display ? 'Ya' : 'Tidak'}}</td>
                         </tr>
                     </table>
                     <a class="btn btn-info" href="{{url('master-items/form/edit')}}/{{$data->id}}">Edit</a>

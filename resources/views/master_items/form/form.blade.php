@@ -13,6 +13,11 @@
     </div>
 
     <div class="form-group">
+        <label>Kategori</label>
+        <input type="text" class="form-control" name="kategori" value="{{$item->kategori ?? ''}}">
+    </div>
+
+    <div class="form-group">
         <label>Harga Beli</label>
         <input type="number" class="form-control" name="harga_beli" required  value="{{$item->harga_beli ?? ''}}">
     </div>
@@ -45,6 +50,15 @@
             <option @if($selected == 'Matkes') selected @endif>Matkes</option>
             <optio @if($selected == 'Umum') selected @endif>Umum</option>
             <optio @if($selected == 'ATK') selected @endif>ATK</option>
+        </select>
+    </div>
+
+    @php $selected_display = $item->display ?? 1; @endphp
+    <div class="form-group">
+        <label>Display</label>
+        <select class="form-control" required name="display">
+            <option @if($selected_display == 1) selected @endif value="1">Ya</option>
+            <option @if($selected_display == 0) selected @endif value="0">Tidak</option>
         </select>
     </div>
 

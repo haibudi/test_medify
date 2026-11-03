@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MasterItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class MasterItemsController extends Controller
@@ -13,6 +14,33 @@ class MasterItemsController extends Controller
     }
 
     public function search(Request $request)
+    {
+        $data_search = $this->filteredItems($request)->get();
+
+        return json_encode([
+            'status' => 200,
+            'data' => $data_search
+        ]);
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $data['items'] = $this->filteredItems($request)->get();
+        $data['filter'] = [
+            'kode' => $request->kode,
+            'nama' => $request->nama,
+            'hargamin' => $request->hargamin,
+            'hargamax' => $request->hargamax,
+        ];
+        $data['generated_at'] = now();
+
+        $pdf = Pdf::loadView('master_items.pdf.index', $data);
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->download('master-items-' . now()->format('Ymd-His') . '.pdf');
+    }
+
+    private function filteredItems(Request $request)
     {
         $kode = $request->kode;
         $nama = $request->nama;
@@ -25,13 +53,7 @@ class MasterItemsController extends Controller
         if (!empty($nama)) $data_search = $data_search->where('nama', 'LIKE', '%' . $nama . '%');
         if (!empty($hargamin)) $data_search = $data_search->where('harga_beli', '>=', $hargamin)->where('harga_beli', '<=', $hargamax);
 
-        $data_search = $data_search->select('kode', 'nama', 'jenis', 'harga_beli', 'laba', 'supplier')->orderBy('id')->get();
-
-
-        return json_encode([
-            'status' => 200,
-            'data' => $data_search
-        ]);
+        return $data_search->select('kode', 'nama', 'kategori', 'jenis', 'harga_beli', 'laba', 'supplier', 'display')->orderBy('id');
     }
 
     public function formView($method, $id = 0)
@@ -71,6 +93,8 @@ class MasterItemsController extends Controller
         $data_item->kode = $kode;
         $data_item->supplier = $request->supplier;
         $data_item->jenis = $request->jenis;
+        $data_item->kategori = $request->kategori;
+        $data_item->display = $request->display ?? 0;
         $data_item->save();
 
         return redirect('master-items');
@@ -95,6 +119,8 @@ class MasterItemsController extends Controller
             $item->kode = $kode;
             $item->supplier = $this->getRandomSupplier();
             $item->jenis = $this->getRandomJenis();
+            $item->kategori = $this->getRandomKategori();
+            $item->display = (bool) rand(0, 1);
             $item->save();
         }
     }
@@ -109,6 +135,13 @@ class MasterItemsController extends Controller
     private function getRandomJenis()
     {
         $array = ['Obat','Alkes','Matkes','Umum','ATK'];
+        $random = rand(0,4);
+        return $array[$random];
+    }
+
+    private function getRandomKategori()
+    {
+        $array = ['Analgesik','Antibiotik','Vitamin','Alat Medis','Lainnya'];
         $random = rand(0,4);
         return $array[$random];
     }
